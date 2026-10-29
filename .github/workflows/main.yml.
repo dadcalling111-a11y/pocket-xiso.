@@ -22,9 +22,13 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Install Rust and WebAssembly
+      - name: Extract source archive
+        run: unzip pocket-xiso-android-source.zip -d source
+
+      - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
+          toolchain: stable
           targets: wasm32-unknown-unknown
 
       - name: Install Trunk
@@ -32,14 +36,14 @@ jobs:
         with:
           version: latest
 
-      - name: Build website
-        working-directory: ./xdvdfs-0.8.3/xdvdfs-web
+      - name: Build web application
+        working-directory: source/xdvdfs-0.8.3/xdvdfs-web
         run: trunk build --release --public-url "/${{ github.event.repository.name }}/"
 
       - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./xdvdfs-0.8.3/xdvdfs-web/dist
+          path: source/xdvdfs-0.8.3/xdvdfs-web/dist
 
   deploy:
     runs-on: ubuntu-latest
